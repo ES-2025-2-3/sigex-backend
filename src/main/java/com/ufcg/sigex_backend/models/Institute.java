@@ -1,22 +1,19 @@
 package com.ufcg.sigex_backend.models;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapKeyJoinColumn;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,14 +41,13 @@ public class Institute {
 
     private String contactPhone;
 
-    @ElementCollection
-    @CollectionTable(
+    @ManyToMany
+    @JoinTable(
         name = "institute_equipment",
-        joinColumns = @JoinColumn(name = "institute_id")
+        joinColumns = @JoinColumn(name = "institute_id"),
+        inverseJoinColumns = @JoinColumn(name = "equipment_id")
     )
-    @MapKeyJoinColumn(name = "equipment_id")
-    @Column(name = "quantity")
-    private Map<Equipment, Integer> equipment;
+    private List<Equipment> equipments;
 
     public Institute(
         String name, 
@@ -64,7 +60,7 @@ public class Institute {
         this.manager = manager;
         this.contactPhone = contactPhone;
         this.rooms = new ArrayList<>();
-        this.equipment = new HashMap<>();
+        this.equipments = new ArrayList<>();
     }
 
     public boolean addRoom(Room room) {
